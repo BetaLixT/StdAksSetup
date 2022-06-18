@@ -11,3 +11,6 @@ nginx:
   loadBalancer:
     publicIp:
     azResourceGroup: 
+certmanager:
+  issuer:
+    adminEmail: 
