@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx-ingress
-  namespace: nginx-ingress
+  namespace: ingress
 spec:
   replicas: {{ .Values.nginx.deployment.replicas }}
   selector:

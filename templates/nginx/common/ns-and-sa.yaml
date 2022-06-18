@@ -1,10 +1,12 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: nginx-ingress 
+  name: ingress
+  labels:
+    cert-manager.io/disable-validation: "true"
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: nginx-ingress 
-  namespace: nginx-ingress
+  namespace: ingress
