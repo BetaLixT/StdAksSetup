@@ -1,0 +1,48 @@
+# Default values for std-deployment.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+name: 
+namespace: Default
+deployment:
+  scale:
+    replicaCount: 1
+    autoScaling: false
+  pool:
+    os: linux
+    name: agentpool
+  terminationGracePeriod: 54000
+  image:
+    registryDomain: 
+    name:
+    tag:
+    pullPolicy: IfNotPresent
+    pullSecret: acr-secret
+  ports:
+  - 8080
+  env:
+  - name: PORT
+    value: "8080"
+  # - name: SECRET_VALUE
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: some-secrets
+  #       key: secret-value
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+service:
+  portMappings:
+  - port: 80
+    targetPort: 8080
+    name: http
+    protocol: TCP
+ingress:
+  enabled: false
+  host:
+  service:
+    port: 80
