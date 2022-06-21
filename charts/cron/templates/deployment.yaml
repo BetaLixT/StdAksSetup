@@ -1,0 +1,50 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+    helmVersion: {{ .Chart.Version }}
+    helmAppVersion: {{ .Chart.AppVersion }}
+    helmName: {{ .Chart.Name }}
+spec:
+  schedule: "{{ .Values.cron.schedule }}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          nodeSelector:
+            "beta.kubernetes.io/os": {{.Values.cron.pool.os}}
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: {{.Values.cron.pool.name}}
+                    operator: In
+                    values:
+                    - {{ .Values.cron.pool.name }}
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 1
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: "app"
+                      operator: In
+                      values:
+                      - {{ .Values.name }}
+                  topologyKey: "kubernetes.io/hostname"
+          terminationGracePeriodSeconds: {{ .Values.terminationGracePeriod }}
+          containers:
+          - name: {{ .Values.name }}
+            image: "{{.Values.cron.image.registryDomain}}/{{.Values.cron.image.name}}:{{ .Values.cron.image.tag }}"
+            imagePullPolicy: {{ .Values.cron.image.pullPolicy }}
+            env:
+              {{- toYaml .Values.cron.env | nindent 12 }}
+          nodeSelector:
+            agentpool: {{.Values.cron.pool.name }}
+          imagePullSecrets:
+          - name: acr-secret
